@@ -1,12 +1,10 @@
-package com.example.task.service;
+package com.dmm.task;
 
 import java.util.Collection;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import com.example.task.data.entity.Users;
 
 public class AccountUserDetails implements UserDetails { // UserDetailsを実装する
 	private Users user;
