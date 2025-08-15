@@ -1,4 +1,4 @@
-package com.dmm.task;
+package com.dmm.task.controller;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -16,6 +16,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.dmm.task.data.repository.TaskRepository;
+import com.dmm.task.data.repository.UsersRepository;
 
 @Controller
 @RequestMapping("/main")

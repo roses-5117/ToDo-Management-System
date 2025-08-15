@@ -1,4 +1,4 @@
-package com.dmm.task;
+package com.dmm.task.controller;
 
 import org.springframework.stereotype.Controller;
 
