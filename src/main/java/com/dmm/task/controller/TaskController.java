@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.dmm.task.data.entity.Task;
+import com.dmm.task.data.entity.Users;
 import com.dmm.task.data.repository.TaskRepository;
 import com.dmm.task.data.repository.UsersRepository;
 

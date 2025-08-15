@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.scheduling.config.Task;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.dmm.task.data.entity.Users;
 import com.dmm.task.data.repository.TaskRepository;
 import com.dmm.task.data.repository.UsersRepository;
 
@@ -67,7 +69,7 @@ public class CalendarController {
         }
 
         LocalDate endDay = currentDay.minusDays(1);
-        List<Task> taskList;
+        List<com.dmm.task.data.entity.Task> taskList;
 
         if ("admin".equals(role)) {
             taskList = taskRepository.findByDateBetween(startDay, endDay);
@@ -76,7 +78,7 @@ public class CalendarController {
         }
 
         Map<LocalDate, List<Task>> tasksMap = new HashMap<>();
-        for (Task task : taskList) {
+        for (com.dmm.task.data.entity.Task task : taskList) {
             LocalDate taskDate = task.getDate();
             tasksMap.computeIfAbsent(taskDate, k -> new ArrayList<>()).add(task);
         }
