@@ -20,7 +20,7 @@ import com.dmm.task.data.repository.TaskRepository;
 import com.dmm.task.data.repository.UsersRepository;
 
 @Controller
-@RequestMapping("/task")
+@RequestMapping("/main")
 public class TaskController {
 
     @Autowired
