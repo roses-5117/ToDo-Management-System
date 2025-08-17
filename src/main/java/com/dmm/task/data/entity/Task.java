@@ -30,6 +30,6 @@ public class Task {
     private boolean done;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_name") // Usersテーブルの主キーと紐づけ
+    @JoinColumn(name = "user_id") // Usersテーブルの主キーと紐づけ
     private Users user;
 }
