@@ -9,7 +9,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.scheduling.config.Task;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -77,11 +76,12 @@ public class CalendarController {
             taskList = taskRepository.findByDateBetweenAndUser(startDay, endDay, loginUser);
         }
 
-        Map<LocalDate, List<Task>> tasksMap = new HashMap<>();
+        Map<LocalDate, List<com.dmm.task.data.entity.Task>> tasksMap = new HashMap<>();
         for (com.dmm.task.data.entity.Task task : taskList) {
             LocalDate taskDate = task.getDate();
             tasksMap.computeIfAbsent(taskDate, k -> new ArrayList<>()).add(task);
         }
+
         
         model.addAttribute("date", date);
         model.addAttribute("month", date.getYear() + "年" + date.getMonthValue() + "月");
