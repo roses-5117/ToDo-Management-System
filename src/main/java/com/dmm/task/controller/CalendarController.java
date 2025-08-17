@@ -14,7 +14,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.dmm.task.data.entity.Users;
@@ -22,7 +21,6 @@ import com.dmm.task.data.repository.TaskRepository;
 import com.dmm.task.data.repository.UsersRepository;
 
 @Controller
-@RequestMapping("/main")
 public class CalendarController {
 
     @Autowired
@@ -31,7 +29,7 @@ public class CalendarController {
     @Autowired
     private UsersRepository usersRepository;
 
-    @GetMapping
+    @GetMapping("/main")
     public String main(@AuthenticationPrincipal UserDetails userDetails,
                        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
                        Model model) {
