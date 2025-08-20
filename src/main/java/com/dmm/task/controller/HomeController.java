@@ -13,8 +13,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.dmm.task.data.entity.Tasks;
 
 // import com.dmm.task.data.entity.Tasks;
 // import com.dmm.task.data.entity.Users;
@@ -30,7 +34,7 @@ public class HomeController {
     // @Autowired
     // private UsersRepository usersRepository;
 
-    @GetMapping("/main")
+	@GetMapping("/main")
     public String main(@AuthenticationPrincipal UserDetails userDetails,
                        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
                        Model model) {
@@ -42,19 +46,16 @@ public class HomeController {
         // Users loginUser = usersRepository.findById(userDetails.getUsername()).orElseThrow();
         // String role = loginUser.getRoleName();
 
-        LocalDate prevMonth = date.minusMonths(1);
-        LocalDate nextMonth = date.plusMonths(1);
-
         LocalDate firstDayOfMonth = date.withDayOfMonth(1);
         DayOfWeek startDayOfWeek = firstDayOfMonth.getDayOfWeek();
         int startDayValue = startDayOfWeek.getValue();
         if (startDayValue == 7) {
-            startDayValue = 0;
+             startDayValue = 0;
         }
-
+        
         LocalDate startDay = firstDayOfMonth.minusDays(startDayValue);
 
-        List<List<LocalDate>> calendarMatrix = new ArrayList<>();
+        List<List<LocalDate>> month = new ArrayList<>();
         LocalDate currentDay = startDay;
 
         for (int i = 0; i < 6; i++) {
@@ -63,7 +64,7 @@ public class HomeController {
                 week.add(currentDay);
                 currentDay = currentDay.plusDays(1);
             }
-            calendarMatrix.add(week);
+            month.add(week);
         }
 
         // タスク関連のコードをコメントアウト
@@ -83,12 +84,15 @@ public class HomeController {
         // }
 
 
-        model.addAttribute("date", date);
-        model.addAttribute("month", date.getYear() + "年" + date.getMonthValue() + "月");
-        model.addAttribute("prev", prevMonth);
-        model.addAttribute("next", nextMonth);
-        model.addAttribute("matrix", calendarMatrix);
+//        model.addAttribute("date", date);
+//        model.addAttribute("month", date.getYear() + "年" + date.getMonthValue() + "月");
+//        model.addAttribute("prev", prevMonth);
+//        model.addAttribute("next", nextMonth);
+//        model.addAttribute("matrix", calendarMatrix);
         // model.addAttribute("tasks", tasksMap);
+        model.addAttribute("matrix", month);  // カレンダーのデータ
+        MultiValueMap<LocalDate, Tasks> tasks = new LinkedMultiValueMap<>();
+        model.addAttribute("tasks", tasks);  // タスクのデータ
 
         return "main";
     }
