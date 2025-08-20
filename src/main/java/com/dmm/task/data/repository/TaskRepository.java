@@ -7,13 +7,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.dmm.task.data.entity.Task;
+import com.dmm.task.data.entity.Tasks;
 import com.dmm.task.data.entity.Users;
 
-public interface TaskRepository extends JpaRepository<Task, Long> {
+public interface TaskRepository extends JpaRepository<Tasks, Long> {
 
     @Query("SELECT t FROM Task t WHERE t.date BETWEEN :start AND :end")
-    List<Task> findByDateBetween(@Param("start") LocalDate start, @Param("end") LocalDate end);
+    List<Tasks> findByDateBetween(@Param("start") LocalDate start, @Param("end") LocalDate end);
 
-    List<Task> findByDateBetweenAndUser(LocalDate start, LocalDate end, Users user);
+    List<Tasks> findByDateBetweenAndUser(LocalDate start, LocalDate end, Users user);
 }

@@ -67,7 +67,7 @@ public class HomeController {
         }
 
         LocalDate endDay = currentDay.minusDays(1);
-        List<com.dmm.task.data.entity.Task> taskList;
+        List<com.dmm.task.data.entity.Tasks> taskList;
 
         if ("admin".equals(role)) {
             taskList = taskRepository.findByDateBetween(startDay, endDay);
@@ -75,8 +75,8 @@ public class HomeController {
             taskList = taskRepository.findByDateBetweenAndUser(startDay, endDay, loginUser);
         }
 
-        Map<LocalDate, List<com.dmm.task.data.entity.Task>> tasksMap = new HashMap<>();
-        for (com.dmm.task.data.entity.Task task : taskList) {
+        Map<LocalDate, List<com.dmm.task.data.entity.Tasks>> tasksMap = new HashMap<>();
+        for (com.dmm.task.data.entity.Tasks task : taskList) {
             LocalDate taskDate = task.getDate();
             tasksMap.computeIfAbsent(taskDate, k -> new ArrayList<>()).add(task);
         }

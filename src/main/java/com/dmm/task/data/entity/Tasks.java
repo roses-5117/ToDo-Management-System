@@ -18,7 +18,7 @@ import lombok.Setter;
 @Table(name = "tasks")
 @Getter
 @Setter
-public class Task {
+public class Tasks {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
