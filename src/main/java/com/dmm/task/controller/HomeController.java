@@ -89,9 +89,19 @@ public class HomeController {
         model.addAttribute("date", date);
         model.addAttribute("loginUser", loginUser);
         model.addAttribute("matrix", month);  // カレンダーのデータ
+        
+        // 当月表示
         model.addAttribute("month", date.getYear() + "年" + date.getMonthValue() + "月");
-//        MultiValueMap<LocalDate, Tasks> tasks = new LinkedMultiValueMap<>();
-//        model.addAttribute("tasks", tasks);  // タスクのデータ
+        
+     // 前月と翌月の日付を計算
+        LocalDate prevMonthDate = date.minusMonths(1);
+        LocalDate nextMonthDate = date.plusMonths(1);
+        
+        // Modelに前月と翌月の日付を追加
+        model.addAttribute("prev", prevMonthDate);
+        model.addAttribute("next", nextMonthDate);
+        model.addAttribute("month", date.getYear() + "年" + date.getMonthValue() + "月");
+        
 
         return "main";
     }
