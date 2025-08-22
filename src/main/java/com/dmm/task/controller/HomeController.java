@@ -102,14 +102,18 @@ public class HomeController {
         model.addAttribute("next", nextMonthDate);
         model.addAttribute("month", date.getYear() + "年" + date.getMonthValue() + "月");
         
+        
 
         return "main";
     }
 	
 	// タスク登録画面の表示用（★追加）
     @GetMapping("/main/create/{date}")
-    public String create() {
+    public String create(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date, Model model) {
         // ここにタスク登録画面を表示するためのロジックを記述します
+    	TaskForm taskForm = new TaskForm();
+        taskForm.setDate(date);
+        model.addAttribute("taskForm", taskForm);
         return "create";
     }
     
