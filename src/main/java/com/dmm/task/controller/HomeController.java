@@ -73,7 +73,7 @@ public class HomeController {
 
 
         List<Tasks> taskList;
-        if ("admin".equals(role)) {
+        if ("admin".equalsIgnoreCase(role)) {
             taskList = taskRepository.findByDateBetween(startDay, endDay);
         } else {
             taskList = taskRepository.findByDateBetweenAndName(startDay, endDay, loginUser.getName());
