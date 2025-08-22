@@ -70,17 +70,18 @@ public class HomeController {
 
 
         List<Tasks> taskList;
-        	if ("admin".equals(role)) {
-        	taskList = taskRepository.findByDateBetween(startDay, endDay);
-        	} else {
-        	taskList = taskRepository.findByDateBetweenAndUser(startDay, endDay, loginUser);
-        	}
+        if ("admin".equals(role)) {
+            taskList = taskRepository.findByDateBetween(startDay, endDay);
+        } else {
+            taskList = taskRepository.findByDateBetweenAndName(startDay, endDay, loginUser.getName());
+        }
 
-        	Map<LocalDate, List<Tasks>> tasksMap = new HashMap<>();
-        	for (Tasks task : taskList) {
-        	LocalDate taskDate = task.getDate();
-        	tasksMap.computeIfAbsent(taskDate, k -> new ArrayList<>()).add(task);
-        	}
+        Map<LocalDate, List<Tasks>> tasksMap = new HashMap<>();
+        for (Tasks task : taskList) {
+            LocalDate taskDate = task.getDate();
+            tasksMap.computeIfAbsent(taskDate, k -> new ArrayList<>()).add(task);
+        }
+
 	
 
 //        model.addAttribute("date", date);
@@ -110,7 +111,8 @@ public class HomeController {
     @PostMapping("/main/create")
     public String createPost(@AuthenticationPrincipal UserDetails userDetails, TaskForm taskForm) {
         // ユーザー名でUsersオブジェクトを検索して取得
-        Users loginUser = usersRepository.findByUserName(userDetails.getUsername());
+    	Users loginUser = usersRepository.findByUserName(userDetails.getUsername());
+        
         
         // TaskFormからTasksエンティティにデータをコピー
         Tasks task = new Tasks();
@@ -119,8 +121,11 @@ public class HomeController {
         task.setDate(taskForm.getDate());
         task.setDone(taskForm.isDone());
         
+        
+     // ログインユーザーの名前をタスクに設定
+       task.setName(loginUser.getName());
         // ここで、正しいUsersオブジェクトがタスクに紐づけられる
-        task.setUser(loginUser);
+//        task.setUser(loginUser);
         
         taskRepository.save(task);
         
