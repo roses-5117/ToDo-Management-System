@@ -5,5 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.dmm.task.data.entity.Users;
 
 public interface UsersRepository extends JpaRepository<Users, String> {
-    Users findByUserName(String userName); 
+
+Users findByUserName(String userName);
+
 }
