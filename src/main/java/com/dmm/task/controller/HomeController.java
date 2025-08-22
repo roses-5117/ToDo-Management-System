@@ -42,9 +42,9 @@ public class HomeController {
                        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
                        Model model) {
         // カレンダーを表示するためのコードをここに記述
-        if (date == null) {
-            date = LocalDate.now();
-        }
+		if (date == null) {
+			date = LocalDate.now();
+		}
 
          Users loginUser = usersRepository.findByUserName(userDetails.getUsername());
          String role = loginUser.getRoleName();
@@ -89,6 +89,7 @@ public class HomeController {
         model.addAttribute("date", date);
         model.addAttribute("loginUser", loginUser);
         model.addAttribute("matrix", month);  // カレンダーのデータ
+        model.addAttribute("month", date.getYear() + "年" + date.getMonthValue() + "月");
 //        MultiValueMap<LocalDate, Tasks> tasks = new LinkedMultiValueMap<>();
 //        model.addAttribute("tasks", tasks);  // タスクのデータ
 
