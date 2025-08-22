@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -22,6 +24,8 @@ import com.dmm.task.data.entity.Users;
 import com.dmm.task.data.repository.TaskRepository;
 import com.dmm.task.data.repository.UsersRepository;
 import com.dmm.task.form.TaskForm;
+
+//import net.bytebuddy.dynamic.DynamicType.Builder.FieldDefinition.Optional;
 
 @Controller
 public class HomeController {
@@ -120,5 +124,21 @@ public class HomeController {
         taskRepository.save(task);
         
         return "redirect:/main?date=" + task.getDate();
+    }
+    
+ // 編集画面の表示用（★追加）
+    @GetMapping("/main/edit/{id}")
+    public String edit(@PathVariable Long id, Model model) {
+        // IDを使ってタスクを検索
+        Optional<Tasks> task = taskRepository.findById(id);
+
+        // タスクが見つかった場合、モデルに追加してeditビューを返す
+        if (task.isPresent()) {
+            model.addAttribute("task", task.get());
+            return "edit";
+        }
+
+        // タスクが見つからない場合は、エラーページまたはメイン画面にリダイレクト
+        return "redirect:/main";
     }
 }
