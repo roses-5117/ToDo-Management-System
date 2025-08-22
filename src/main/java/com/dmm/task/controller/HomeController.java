@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -139,6 +140,32 @@ public class HomeController {
         }
 
         // タスクが見つからない場合は、エラーページまたはメイン画面にリダイレクト
+        return "redirect:/main";
+    }
+    
+    @PostMapping("/main/edit/{id}")
+    public String update(@PathVariable Long id, @ModelAttribute TaskForm taskForm) {
+        Optional<Tasks> task = taskRepository.findById(id);
+
+        if (task.isPresent()) {
+            Tasks existingTask = task.get();
+            existingTask.setTitle(taskForm.getTitle());
+            existingTask.setText(taskForm.getText());
+            existingTask.setDate(taskForm.getDate());
+            existingTask.setDone(taskForm.isDone());
+            
+            taskRepository.save(existingTask);
+            
+            return "redirect:/main?date=" + existingTask.getDate();
+        }
+        
+        return "redirect:/main";
+    }
+    
+    // タスクの削除
+    @PostMapping("/main/delete/{id}")
+    public String delete(@PathVariable Long id) {
+        taskRepository.deleteById(id);
         return "redirect:/main";
     }
 }
