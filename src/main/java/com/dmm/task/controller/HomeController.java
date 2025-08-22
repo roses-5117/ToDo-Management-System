@@ -13,8 +13,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -81,21 +79,13 @@ public class HomeController {
             LocalDate taskDate = task.getDate();
             tasksMap.computeIfAbsent(taskDate, k -> new ArrayList<>()).add(task);
         }
-
-	
-
-//        model.addAttribute("date", date);
-//        model.addAttribute("month", date.getYear() + "年" + date.getMonthValue() + "月");
-//        model.addAttribute("prev", prevMonth);
-//        model.addAttribute("next", nextMonth);
-//        model.addAttribute("matrix", calendarMatrix);
-        // model.addAttribute("tasks", tasksMap);
+        
         model.addAttribute("tasks", tasksMap);
         model.addAttribute("date", date);
         model.addAttribute("loginUser", loginUser);
         model.addAttribute("matrix", month);  // カレンダーのデータ
-        MultiValueMap<LocalDate, Tasks> tasks = new LinkedMultiValueMap<>();
-        model.addAttribute("tasks", tasks);  // タスクのデータ
+//        MultiValueMap<LocalDate, Tasks> tasks = new LinkedMultiValueMap<>();
+//        model.addAttribute("tasks", tasks);  // タスクのデータ
 
         return "main";
     }
