@@ -43,12 +43,14 @@ public class HomeController {
 
 	@GetMapping("/main")
     public String main(@AuthenticationPrincipal UserDetails userDetails,
-                       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-                       Model model) {
+    	    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+    	    Model model, HttpSession session) {
         // カレンダーを表示するためのコードをここに記述
 		if (date == null) {
 			date = LocalDate.now();
 		}
+		
+		session.setAttribute("currentDate", date);
 
          Users loginUser = usersRepository.findByUserName(userDetails.getUsername());
          String role = loginUser.getRoleName();
@@ -62,17 +64,6 @@ public class HomeController {
         
         LocalDate startDay = firstDayOfMonth.minusDays(startDayValue);
         
-//        LocalDate endDay = startDay.plusDays(42).minusDays(1);
-//        List<List<LocalDate>> month = new ArrayList<>();
-//        LocalDate currentDay = startDay;
-//        for (int i = 0; i < 6; i++) {
-//            List<LocalDate> week = new ArrayList<>();
-//            for (int j = 0; j < 7; j++) {
-//                week.add(currentDay);
-//                currentDay = currentDay.plusDays(1);
-//            }
-//            month.add(week);
-//        }
         
      // カレンダーの週数を動的に計算
         WeekFields weekFields = WeekFields.of(Locale.getDefault());
@@ -120,7 +111,6 @@ public class HomeController {
         // Modelに前月と翌月の日付を追加
         model.addAttribute("prev", prevMonthDate);
         model.addAttribute("next", nextMonthDate);
-        // model.addAttribute("month", date.getYear() + "年" + date.getMonthValue() + "月");
      // タスク登録時のリダイレクト先として使用するため、現在の表示日付をモデルに追加
         model.addAttribute("currentDate", date);
         
@@ -131,11 +121,13 @@ public class HomeController {
 	// タスク登録画面の表示用
 	@GetMapping("/main/create/{date}")
 		public String create(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-			    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnDate,
 			    Model model, HttpSession session){
 	    TaskForm taskForm = new TaskForm();
 	    taskForm.setDate(date);
 	    model.addAttribute("taskForm", taskForm);
+	    
+	    LocalDate returnDate = (LocalDate) session.getAttribute("currentDate");
+	    
 	    // 登録後のリダイレクト先として、元の月を保持
 	    if (returnDate == null) {
 	        returnDate = date.withDayOfMonth(1);
@@ -145,7 +137,6 @@ public class HomeController {
 	    return "create";
 	}
 
-	// ...
     
 	// タスク登録用（★追加）
     @PostMapping("/main/create")
@@ -184,13 +175,18 @@ public class HomeController {
  // 編集画面の表示用（★追加）
     @GetMapping("/main/edit/{id}")
     public String edit(@PathVariable Long id, 
-    	    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnDate,
-    	    Model model, HttpSession session) {
-		Optional<Tasks> task = taskRepository.findById(id);
+    Model model, HttpSession session) {
+	Optional<Tasks> task = taskRepository.findById(id);
 
         // タスクが見つかった場合、モデルに追加してeditビューを返す
         if (task.isPresent()) {
-            model.addAttribute("task", task.get());
+        	model.addAttribute("task", task.get());
+        	
+        	LocalDate returnDate = (LocalDate) session.getAttribute("currentDate");
+        	if (returnDate == null) {
+                returnDate = task.get().getDate().withDayOfMonth(1);
+            }
+  
             model.addAttribute("returnDate", returnDate); // ★追加
             session.setAttribute("returnDate", returnDate);
             return "edit";
