@@ -69,7 +69,7 @@ class="prevnext" href="javascript:form2.submit()">keyboard_arrow_right</a></span
  <a th:href="@{/main/create/{date}(date=${day}, returnDate=${date})}">[[${day.dayOfMonth}]]</a>
  </div>
  <div th:each="t : ${tasks.get(day)}">
- <a th:if="${t}" th:href="@{/main/edit/{id}(id=${t.id})}"> <span
+ <a th:if="${t}" th:href="@{/main/edit/{id}(id=${t.id}, returnDate=${date})}"> <span
 th:if="${t.done}">✅</span><span th:text="${t.title}"></span></a>
  </div>
  </div>

@@ -22,6 +22,9 @@
   <div class="form sd">
    <div class="title sd">Edit</div>
    <form method="post" th:action="@{/main/edit/{id}(id=${task.id})}">
+   <!-- 追記 -->
+    <input type="hidden" name="returnDate" th:value="${returnDate}" />
+    
     <div class="sd">
      <div class="form_row sd">
       <p class="form_text sd">タイトル：</p>

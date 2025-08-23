@@ -171,13 +171,15 @@ public class HomeController {
     
  // 編集画面の表示用（★追加）
     @GetMapping("/main/edit/{id}")
-    public String edit(@PathVariable Long id, Model model) {
-        // IDを使ってタスクを検索
-        Optional<Tasks> task = taskRepository.findById(id);
+    public String edit(@PathVariable Long id, 
+ 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnDate, // ★この行を追加
+ 			Model model) {
+ 		Optional<Tasks> task = taskRepository.findById(id);
 
         // タスクが見つかった場合、モデルに追加してeditビューを返す
         if (task.isPresent()) {
             model.addAttribute("task", task.get());
+            model.addAttribute("returnDate", returnDate); // ★追加
             return "edit";
         }
 
@@ -186,8 +188,9 @@ public class HomeController {
     }
     
     @PostMapping("/main/edit/{id}")
-    public String update(@PathVariable Long id, @ModelAttribute TaskForm taskForm) {
-        Optional<Tasks> task = taskRepository.findById(id);
+    public String update(@PathVariable Long id, @ModelAttribute TaskForm taskForm,
+ 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnDate) { // ★この行を追加
+ 		Optional<Tasks> task = taskRepository.findById(id);
 
         if (task.isPresent()) {
             Tasks existingTask = task.get();
@@ -198,7 +201,7 @@ public class HomeController {
             
             taskRepository.save(existingTask);
             
-            return "redirect:/main?date=" + existingTask.getDate();
+            return "redirect:/main?date=" + returnDate; // ★変更
         }
         
         return "redirect:/main";
