@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
@@ -23,8 +25,7 @@
   <div class="form sd">
    <div class="title sd">Regist</div>
    <div class="form_box sd">
-    <form method="post" th:action="@{/main/create}" th:object="${taskForm}">
-  <input type="hidden" name="returnDate" th:value="${returnDate}" />
+    <form method="post" th:action="@{/main/create}">
      <div class="form_row sd">
       <p class="form_text sd">タイトル：</p>
       <div class="form_item">

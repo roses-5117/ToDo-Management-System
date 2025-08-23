@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
@@ -22,9 +24,6 @@
   <div class="form sd">
    <div class="title sd">Edit</div>
    <form method="post" th:action="@{/main/edit/{id}(id=${task.id})}">
-   <!-- 追記 -->
-    <input type="hidden" name="returnDate" th:value="${returnDate}" />
-    
     <div class="sd">
      <div class="form_row sd">
       <p class="form_text sd">タイトル：</p>
@@ -62,7 +61,6 @@
    </form>
    <form th:action="@{'/main/delete/' + ${task.id}}" th:method="post"
     class="form_box sd" style="width: 100%; max-width: 100%">
-    <input type="hidden" name="returnDate" th:value="${returnDate}" />
     <button class="form_button delete sd">
      <p class="form_button_text sd">削除</p>
     </button>
