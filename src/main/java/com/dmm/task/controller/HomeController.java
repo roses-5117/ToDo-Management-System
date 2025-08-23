@@ -2,9 +2,11 @@ package com.dmm.task.controller;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -57,12 +59,28 @@ public class HomeController {
         }
         
         LocalDate startDay = firstDayOfMonth.minusDays(startDayValue);
-        LocalDate endDay = startDay.plusDays(42).minusDays(1);
+        
+//        LocalDate endDay = startDay.plusDays(42).minusDays(1);
+//        List<List<LocalDate>> month = new ArrayList<>();
+//        LocalDate currentDay = startDay;
+//        for (int i = 0; i < 6; i++) {
+//            List<LocalDate> week = new ArrayList<>();
+//            for (int j = 0; j < 7; j++) {
+//                week.add(currentDay);
+//                currentDay = currentDay.plusDays(1);
+//            }
+//            month.add(week);
+//        }
+        
+     // カレンダーの週数を動的に計算
+        WeekFields weekFields = WeekFields.of(Locale.getDefault());
+        int weeksInMonth = (int) firstDayOfMonth.range(weekFields.weekOfMonth()).getMaximum();
+        LocalDate endDay = startDay.plusDays(weeksInMonth * 7).minusDays(1);
 
         List<List<LocalDate>> month = new ArrayList<>();
         LocalDate currentDay = startDay;
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < weeksInMonth; i++) {
             List<LocalDate> week = new ArrayList<>();
             for (int j = 0; j < 7; j++) {
                 week.add(currentDay);
@@ -100,26 +118,36 @@ public class HomeController {
         // Modelに前月と翌月の日付を追加
         model.addAttribute("prev", prevMonthDate);
         model.addAttribute("next", nextMonthDate);
-        model.addAttribute("month", date.getYear() + "年" + date.getMonthValue() + "月");
-        
+        // model.addAttribute("month", date.getYear() + "年" + date.getMonthValue() + "月");
+     // タスク登録時のリダイレクト先として使用するため、現在の表示日付をモデルに追加
+        model.addAttribute("currentDate", date);
         
 
         return "main";
     }
 	
-	// タスク登録画面の表示用（★追加）
-    @GetMapping("/main/create/{date}")
-    public String create(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date, Model model) {
-        // ここにタスク登録画面を表示するためのロジックを記述します
-    	TaskForm taskForm = new TaskForm();
-        taskForm.setDate(date);
-        model.addAttribute("taskForm", taskForm);
-        return "create";
-    }
+	// タスク登録画面の表示用
+	@GetMapping("/main/create/{date}")
+	public String create(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnDate,
+            Model model) {
+	    TaskForm taskForm = new TaskForm();
+	    taskForm.setDate(date);
+	    model.addAttribute("taskForm", taskForm);
+	    // 登録後のリダイレクト先として、元の月を保持
+	    if (returnDate == null) {
+	        returnDate = date.withDayOfMonth(1);
+	    }
+	    model.addAttribute("returnDate", returnDate);
+	    return "create";
+	}
+
+	// ...
     
 	// タスク登録用（★追加）
     @PostMapping("/main/create")
-    public String createPost(@AuthenticationPrincipal UserDetails userDetails, TaskForm taskForm) {
+    public String createPost(@AuthenticationPrincipal UserDetails userDetails, TaskForm taskForm,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnDate) {
         // ユーザー名でUsersオブジェクトを検索して取得
     	Users loginUser = usersRepository.findByUserName(userDetails.getUsername());
         
@@ -134,12 +162,11 @@ public class HomeController {
         
      // ログインユーザーの名前をタスクに設定
        task.setName(loginUser.getName());
-        // ここで、正しいUsersオブジェクトがタスクに紐づけられる
-//        task.setUser(loginUser);
         
         taskRepository.save(task);
         
-        return "redirect:/main?date=" + task.getDate();
+     // リダイレクト先を、タスクが登録された日付ではなく、元のカレンダーの月に変更
+        return "redirect:/main?date=" + returnDate;
     }
     
  // 編集画面の表示用（★追加）
