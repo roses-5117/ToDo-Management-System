@@ -19,16 +19,13 @@ rel="stylesheet">
  <a th:href="@{/main/create/{date}(date=${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')})}"
 class="text">登録</a>
  </header>
-
-
  <div class="todo sd">
  <div class="sd">
  <p class="title text sd">ToDo</p>
  <div class="todo_header">
  <form th:action="@{/main}" name="form1">
  <span class="material-icons sd"><input type="hidden"
-name="date" th:value="${#temporals.format(prev, 'yyyy-MM-dd')}"><a
-class="prevnext" href="javascript:form1.submit()">keyboard_arrow_left</a></span>
+name="date" th:value="${#temporals.format(prev, 'yyyy-MM-dd')}"><a class="prevnext" href="javascript:form1.submit()">keyboard_arrow_left</a></span>
  </form>
  <p class="test sd" style="margin: 5px 0px" th:text="${month}"></p>
  <form th:action="@{/main}" name="form2">
