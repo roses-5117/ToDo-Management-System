@@ -10,6 +10,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -128,9 +130,9 @@ public class HomeController {
 	
 	// タスク登録画面の表示用
 	@GetMapping("/main/create/{date}")
-	public String create(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnDate,
-            Model model) {
+		public String create(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+			    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnDate,
+			    Model model, HttpSession session){
 	    TaskForm taskForm = new TaskForm();
 	    taskForm.setDate(date);
 	    model.addAttribute("taskForm", taskForm);
@@ -139,6 +141,7 @@ public class HomeController {
 	        returnDate = date.withDayOfMonth(1);
 	    }
 	    model.addAttribute("returnDate", returnDate);
+	    session.setAttribute("returnDate", returnDate); // ★セッションにreturnDateを保存
 	    return "create";
 	}
 
@@ -146,8 +149,8 @@ public class HomeController {
     
 	// タスク登録用（★追加）
     @PostMapping("/main/create")
-    public String createPost(@AuthenticationPrincipal UserDetails userDetails, TaskForm taskForm,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnDate) {
+    public String createPost(@AuthenticationPrincipal UserDetails userDetails, TaskForm taskForm, HttpSession session) {
+
         // ユーザー名でUsersオブジェクトを検索して取得
     	Users loginUser = usersRepository.findByUserName(userDetails.getUsername());
         
@@ -165,21 +168,31 @@ public class HomeController {
         
         taskRepository.save(task);
         
-     // リダイレクト先を、タスクが登録された日付ではなく、元のカレンダーの月に変更
+     // セッションから元の表示月を取得
+        LocalDate returnDate = (LocalDate) session.getAttribute("returnDate");
+        session.removeAttribute("returnDate"); // ★使用後はセッションから削除
+        
+     // セッションに値がない場合（想定外のアクセスなど）に備え、デフォルトの挙動を指定
+        if (returnDate == null) {
+        	return "redirect:/main?date=" + taskForm.getDate();
+        }
+        
+     // リダイレクト先を、セッションに保存した元の月に設定
         return "redirect:/main?date=" + returnDate;
     }
     
  // 編集画面の表示用（★追加）
     @GetMapping("/main/edit/{id}")
     public String edit(@PathVariable Long id, 
- 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnDate, // ★この行を追加
- 			Model model) {
- 		Optional<Tasks> task = taskRepository.findById(id);
+    	    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnDate,
+    	    Model model, HttpSession session) {
+		Optional<Tasks> task = taskRepository.findById(id);
 
         // タスクが見つかった場合、モデルに追加してeditビューを返す
         if (task.isPresent()) {
             model.addAttribute("task", task.get());
             model.addAttribute("returnDate", returnDate); // ★追加
+            session.setAttribute("returnDate", returnDate);
             return "edit";
         }
 
@@ -188,9 +201,8 @@ public class HomeController {
     }
     
     @PostMapping("/main/edit/{id}")
-    public String update(@PathVariable Long id, @ModelAttribute TaskForm taskForm,
- 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnDate) { // ★この行を追加
- 		Optional<Tasks> task = taskRepository.findById(id);
+    public String update(@PathVariable Long id, @ModelAttribute TaskForm taskForm, HttpSession session) { // 変更点：引数を変更
+        Optional<Tasks> task = taskRepository.findById(id);
 
         if (task.isPresent()) {
             Tasks existingTask = task.get();
@@ -201,7 +213,14 @@ public class HomeController {
             
             taskRepository.save(existingTask);
             
-            return "redirect:/main?date=" + returnDate; // ★変更
+            LocalDate returnDate = (LocalDate) session.getAttribute("returnDate"); // 変更点：この行を追加
+            session.removeAttribute("returnDate"); // 変更点：この行を追加
+
+            if (returnDate == null) { // 変更点：この行を追加
+                return "redirect:/main?date=" + existingTask.getDate(); // 変更点：この行を追加
+            }
+            
+            return "redirect:/main?date=" + returnDate; // 変更点：この行を変更
         }
         
         return "redirect:/main";
@@ -209,8 +228,16 @@ public class HomeController {
     
     // タスクの削除
     @PostMapping("/main/delete/{id}")
-    public String delete(@PathVariable Long id, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnDate) {
+    public String delete(@PathVariable Long id, HttpSession session) { // 変更点：引数を変更
         taskRepository.deleteById(id);
-        return "redirect:/main?date=" + returnDate;
+        
+        LocalDate returnDate = (LocalDate) session.getAttribute("returnDate"); // 変更点：この行を追加
+        session.removeAttribute("returnDate"); // 変更点：この行を追加
+
+        if (returnDate == null) { // 変更点：この行を追加
+            return "redirect:/main"; // 変更点：この行を追加
+        }
+        
+        return "redirect:/main?date=" + returnDate; // 変更点：この行を変更
     }
 }
