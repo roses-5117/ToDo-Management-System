@@ -62,6 +62,7 @@
    </form>
    <form th:action="@{'/main/delete/' + ${task.id}}" th:method="post"
     class="form_box sd" style="width: 100%; max-width: 100%">
+    <input type="hidden" name="returnDate" th:value="${returnDate}" />
     <button class="form_button delete sd">
      <p class="form_button_text sd">削除</p>
     </button>

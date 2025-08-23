@@ -209,8 +209,8 @@ public class HomeController {
     
     // タスクの削除
     @PostMapping("/main/delete/{id}")
-    public String delete(@PathVariable Long id) {
+    public String delete(@PathVariable Long id, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnDate) {
         taskRepository.deleteById(id);
-        return "redirect:/main";
+        return "redirect:/main?date=" + returnDate;
     }
 }
